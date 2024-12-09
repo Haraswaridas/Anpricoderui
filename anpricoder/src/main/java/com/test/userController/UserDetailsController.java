@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.test.userEntity.UserDetailsEntity;
@@ -20,44 +21,53 @@ import com.test.userServices.UserDetailsService;
 public class UserDetailsController {
 	 @Autowired
 	    private UserDetailsService userDetailsService;
-	 @PostMapping("/save")
-	    public ResponseEntity<UserDetailsEntity> createUser(@RequestBody UserDetailsEntity userDetails) {
-	        UserDetailsEntity createdUser = userDetailsService.createUser(userDetails);
-	        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+	 
+	 public UserDetailsController(UserDetailsService userDetailsService) {
+	        this.userDetailsService = userDetailsService;
 	    }
-	 @GetMapping("/show/{emailId}")
-	    public ResponseEntity<Optional<UserDetailsEntity>> getUserByEmail(@PathVariable String emailId) {
-	        Optional<UserDetailsEntity> user = userDetailsService.getUserByEmail(emailId);
-	        if (user.isPresent()) {
-	            return new ResponseEntity<>(user, HttpStatus.OK);
-	        } else {
-	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+	    // Create User
+	    @PostMapping
+	    public ResponseEntity<UserDetailsEntity> createUser(@RequestBody UserDetailsEntity user) {
+	        UserDetailsEntity createdUser = userDetailsService.createUser(user);
+	        return ResponseEntity.ok(createdUser);
+	    }
+
+	    // Get User by ID
+	    @GetMapping("/{id}")
+	    public ResponseEntity<UserDetailsEntity> getUserById(@PathVariable Long id) {
+	        Optional<UserDetailsEntity> user = userDetailsService.getUserById(id);
+	        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	    }
+	    // Find User by Gmail
+	    @GetMapping("/findByGmail")
+	    public ResponseEntity<UserDetailsEntity> getUserByGmail(@RequestParam String email) {
+	        Optional<UserDetailsEntity> user = userDetailsService.findByGmail(email);
+	        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	    }
+
+	    // Update User
+	    @PutMapping("/{id}")
+	    public ResponseEntity<UserDetailsEntity> updateUser(@PathVariable Long id, @RequestBody UserDetailsEntity user) {
+	        try {
+	            UserDetailsEntity updatedUser = userDetailsService.updateUser(id, user);
+	            return ResponseEntity.ok(updatedUser);
+	        } catch (RuntimeException ex) {
+	            return ResponseEntity.notFound().build();
 	        }
 	    }
-	 @GetMapping("/show")
+
+	    // Delete User
+	    @DeleteMapping("/{id}")
+	    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+	        userDetailsService.deleteUser(id);
+	        return ResponseEntity.noContent().build();
+	    }
+
+	    // Get All Users
+	    @GetMapping
 	    public ResponseEntity<Iterable<UserDetailsEntity>> getAllUsers() {
-	        Iterable<UserDetailsEntity> users = userDetailsService.getAllUsers();
-	        return new ResponseEntity<>(users, HttpStatus.OK);
-	    }
-	 @PutMapping("/update/{emailId}")
-	    public ResponseEntity<UserDetailsEntity> updateUser(
-	            @PathVariable String emailId,
-	            @RequestBody UserDetailsEntity userDetails) {
-	        try {
-	            UserDetailsEntity updatedUser = userDetailsService.updateUser(emailId, userDetails);
-	            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-	        } catch (RuntimeException e) {
-	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	        }
-	    }
-	 @DeleteMapping("/delete/{emailId}")
-	    public ResponseEntity<Void> deleteUser(@PathVariable String emailId) {
-	        try {
-	            userDetailsService.deleteUser(emailId);
-	            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	        } catch (Exception e) {
-	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	        }
+	        return ResponseEntity.ok(userDetailsService.getAllUsers());
 	    }
 	 
 

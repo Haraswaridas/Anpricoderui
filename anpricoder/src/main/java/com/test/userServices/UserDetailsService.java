@@ -9,14 +9,16 @@ import com.test.userEntity.UserDetailsEntity;
 @Service
 public interface UserDetailsService {
 
-	UserDetailsEntity createUser(UserDetailsEntity userDetails);
+	UserDetailsEntity createUser(UserDetailsEntity user);
 
-	Optional<UserDetailsEntity> getUserByEmail(String emailId);
+    UserDetailsEntity updateUser(Long id, UserDetailsEntity user);
 
-	Iterable<UserDetailsEntity> getAllUsers();
+    Optional<UserDetailsEntity> getUserById(Long id);
 
-	UserDetailsEntity updateUser(String emailId, UserDetailsEntity userDetails);
+    Optional<UserDetailsEntity> findByGmail(String email);
 
-	void deleteUser(String emailId);
+    void deleteUser(Long id);
+
+    Iterable<UserDetailsEntity> getAllUsers();
 
 }

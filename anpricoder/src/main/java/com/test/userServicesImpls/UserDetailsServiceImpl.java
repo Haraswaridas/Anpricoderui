@@ -12,48 +12,52 @@ import com.test.userServices.UserDetailsService;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 	@Autowired
-    private UserDetailsEntityDao userDetailsEntityDao;
+    private  UserDetailsEntityDao userDetailsEntityDao;
 	
-	@Override
-	public UserDetailsEntity createUser(UserDetailsEntity userDetails) {
-		return userDetailsEntityDao.save(userDetails);
-	}
+	public UserDetailsServiceImpl(UserDetailsEntityDao userDetailsEntityDao) {
+        this.userDetailsEntityDao = userDetailsEntityDao;
+    }
 
-	@Override
-	public Optional<UserDetailsEntity> getUserByEmail(String emailId) {
-		return userDetailsEntityDao.findById(emailId);
-	}
+    @Override
+    public UserDetailsEntity createUser(UserDetailsEntity user) {
+        return userDetailsEntityDao.save(user);
+    }
 
-	@Override
-	public Iterable<UserDetailsEntity> getAllUsers() {
-		return userDetailsEntityDao.findAll();
-	}
+    @Override
+    public UserDetailsEntity updateUser(Long id, UserDetailsEntity user) {
+        Optional<UserDetailsEntity> existingUser = userDetailsEntityDao.findById(id);
+        if (existingUser.isPresent()) {
+            UserDetailsEntity updatedUser = existingUser.get();
+            updatedUser.setFirstName(user.getFirstName());
+            updatedUser.setLastName(user.getLastName());
+            updatedUser.setEmail(user.getEmail());
+            updatedUser.setPhone(user.getPhone());
+            updatedUser.setParentsPhone(user.getParentsPhone());
+            updatedUser.setPassword(user.getPassword());
+            return userDetailsEntityDao.save(updatedUser);
+        }
+        throw new RuntimeException("User not found with ID: " + id);
+    }
+    @Override
+    public Optional<UserDetailsEntity> getUserById(Long id) {
+        return userDetailsEntityDao.findById(id);
+    }
 
-	@Override
-	public UserDetailsEntity updateUser(String emailId, UserDetailsEntity userDetails) {
-		 Optional<UserDetailsEntity> existingUserOpt = userDetailsEntityDao.findById(emailId);
+    @Override
+    public Optional<UserDetailsEntity> findByGmail(String email) {
+        return Optional.ofNullable(userDetailsEntityDao.findByEmail(email));
+    }
 
-	        if (existingUserOpt.isPresent()) {
-	            UserDetailsEntity existingUser = existingUserOpt.get();
+    @Override
+    public void deleteUser(Long id) {
+        userDetailsEntityDao.deleteById(id);
+    }
 
-	            // Update fields
-	            existingUser.setFirstName(userDetails.getFirstName());
-	            existingUser.setLastName(userDetails.getLastName());
-	            existingUser.setPhone(userDetails.getPhone());
-	            existingUser.setParentsPhone(userDetails.getParentsPhone());
-	            existingUser.setPassword(userDetails.getPassword());
-	            existingUser.setConfirmPassword(userDetails.getConfirmPassword());
-
-	            return userDetailsEntityDao.save(existingUser);
-	        } else {
-	            throw new RuntimeException("User not found with email: " + emailId);
-	        }
-	}
-
-	@Override
-	public void deleteUser(String emailId) {
-		userDetailsEntityDao.deleteById(emailId);
-	}
+	
+	 @Override
+	    public Iterable<UserDetailsEntity> getAllUsers() {
+	        return userDetailsEntityDao.findAll();
+	    }
 	
 
 }
