@@ -27,27 +27,27 @@ public class UserDetailsController {
 	    }
 
 	    // Create User
-	    @PostMapping
+	    @PostMapping("/save")
 	    public ResponseEntity<UserDetailsEntity> createUser(@RequestBody UserDetailsEntity user) {
 	        UserDetailsEntity createdUser = userDetailsService.createUser(user);
 	        return ResponseEntity.ok(createdUser);
 	    }
 
 	    // Get User by ID
-	    @GetMapping("/{id}")
+	    @GetMapping("/show/{id}")
 	    public ResponseEntity<UserDetailsEntity> getUserById(@PathVariable Long id) {
 	        Optional<UserDetailsEntity> user = userDetailsService.getUserById(id);
 	        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 	    }
 	    // Find User by Gmail
-	    @GetMapping("/findByGmail")
+	    @GetMapping("/find/findByGmail")
 	    public ResponseEntity<UserDetailsEntity> getUserByGmail(@RequestParam String email) {
 	        Optional<UserDetailsEntity> user = userDetailsService.findByGmail(email);
 	        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 	    }
 
 	    // Update User
-	    @PutMapping("/{id}")
+	    @PutMapping("/update/{id}")
 	    public ResponseEntity<UserDetailsEntity> updateUser(@PathVariable Long id, @RequestBody UserDetailsEntity user) {
 	        try {
 	            UserDetailsEntity updatedUser = userDetailsService.updateUser(id, user);
@@ -58,14 +58,14 @@ public class UserDetailsController {
 	    }
 
 	    // Delete User
-	    @DeleteMapping("/{id}")
+	    @DeleteMapping("/delete/{id}")
 	    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 	        userDetailsService.deleteUser(id);
 	        return ResponseEntity.noContent().build();
 	    }
 
 	    // Get All Users
-	    @GetMapping
+	    @GetMapping("/show")
 	    public ResponseEntity<Iterable<UserDetailsEntity>> getAllUsers() {
 	        return ResponseEntity.ok(userDetailsService.getAllUsers());
 	    }
