@@ -11,13 +11,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.request.LoginRequest;
+import com.test.request.SignupRequest;
 import com.test.userEntity.UserDetailsEntity;
 import com.test.userServices.UserDetailsService;
 
 @RestController
+@RequestMapping("/auth")
 public class UserDetailsController {
 	 @Autowired
 	    private UserDetailsService userDetailsService;
@@ -68,6 +72,26 @@ public class UserDetailsController {
 	    @GetMapping("/show")
 	    public ResponseEntity<Iterable<UserDetailsEntity>> getAllUsers() {
 	        return ResponseEntity.ok(userDetailsService.getAllUsers());
+	    }
+	    // Signup API
+//	    @PostMapping("/signup")
+//	    public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) {
+//	        String result = userDetailsService.registerUser(signupRequest);
+//	        return ResponseEntity.ok(result);
+//	    }
+//
+//	    // Login API
+//	    @PostMapping("/login")
+//	    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+//	        String token = userDetailsService.authenticateUser(loginRequest);
+//	        return ResponseEntity.ok(token);
+//	    }
+
+	    // Logout API
+	    @PostMapping("/logout")
+	    public ResponseEntity<?> logout(@RequestParam String token) {
+	        userDetailsService.logoutUser(token);
+	        return ResponseEntity.ok("User logged out successfully.");
 	    }
 	 
 

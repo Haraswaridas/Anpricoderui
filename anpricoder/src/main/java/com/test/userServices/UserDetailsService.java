@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.test.request.LoginRequest;
+import com.test.request.SignupRequest;
 import com.test.userEntity.UserDetailsEntity;
 
 @Service
@@ -20,5 +22,10 @@ public interface UserDetailsService {
     void deleteUser(Long id);
 
     Iterable<UserDetailsEntity> getAllUsers();
+//    String registerUser(SignupRequest signupRequest);
+//    String authenticateUser(LoginRequest loginRequest);
+    void logoutUser(String token);
+
+	
 
 }
